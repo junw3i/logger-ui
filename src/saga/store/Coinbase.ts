@@ -13,7 +13,7 @@ export const coinbaseSlice = createSlice({
   initialState,
   reducers: {
     updateLastPrice: (state, action) => {
-      state.price = action.payload.price
+      state.price = action.payload
     },
   },
 })

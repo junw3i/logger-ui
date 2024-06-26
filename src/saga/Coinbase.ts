@@ -2,6 +2,7 @@
 import { eventChannel } from 'redux-saga'
 import { put, take, call } from 'redux-saga/effects'
 import { updateLastPrice } from './store/Coinbase'
+import BigNumber from 'bignumber.js'
 
 interface WebSocketMessage {
   data: any
@@ -40,7 +41,7 @@ function initWebsocket() {
         const { type, price } = msg
         switch (type) {
           case 'ticker':
-            return emitter({ type: updateLastPrice.toString(), payload: price })
+            return emitter({ type: updateLastPrice.toString(), payload: new BigNumber(price).toFormat(2) })
           default:
           // nothing to do
         }
