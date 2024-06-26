@@ -1,8 +1,9 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
   text-align: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100vw;
 }
 
 .logo {
@@ -39,4 +40,38 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.grid_template {
+  grid-template-columns: 158px 1fr 1fr 1fr 1fr 1fr 1fr 1.8fr;
+}
+
+.grid[data-hovered-cell-address^='R1'] .cell[data-address^='R1'],
+.grid[data-hovered-cell-address^='R2'] .cell[data-address^='R2'],
+.grid[data-hovered-cell-address^='R3'] .cell[data-address^='R3'],
+.grid[data-hovered-cell-address^='R4'] .cell[data-address^='R4'],
+.grid[data-hovered-cell-address^='R5'] .cell[data-address^='R5'],
+.grid[data-hovered-cell-address^='R6'] .cell[data-address^='R6'],
+.grid[data-hovered-cell-address^='R7'] .cell[data-address^='R7'],
+.grid[data-hovered-cell-address^='R8'] .cell[data-address^='R8'] {
+  background-color: #141b2b;
+}
+
+.cell {
+  cursor: default;
+}
+
+.box-outline {
+  /* outline: 2px solid #fff; */
+  /* outline-offset: -2px; */
+  min-height: 4rem;
+}
+
+.box-data {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  height: 100%;
+  min-height: 3.5rem;
+  gap: 0.5rem;
 }

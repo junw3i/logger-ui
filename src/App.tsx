@@ -1,13 +1,20 @@
 import { Provider } from 'react-redux'
 import { store } from './saga/store'
+
+import Funding from './components/Funding'
+import Nav from './components/Nav'
 import './App.css'
 
 function App() {
   return (
     <Provider store={store}>
+      <div className="max-w-screen-2xl">
+        <Funding />
+        <Nav />
+      </div>
       <div className="w-96">
-        <div className="mx-auto w-full text-center bg-black text-white rounded-lg h-96">
-          <div className="h-6 bg-gray-800 rounded-lg relative flex items-center justify-center">
+        <div className="mx-auto w-full text-center bg-black text-white h-96">
+          <div className="h-6 bg-gray-800 relative flex items-center justify-center">
             <div className="absolute flex space-x-2 pl-2 left-0">
               <div className="terminal-button bg-red-500" />
               <div className="terminal-button bg-yellow-300" />

@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import coinbaseReducer from './Coinbase'
+import firestoreReducer from './Firestore'
 import createSagaMiddleware from 'redux-saga'
 import { rootSaga } from '..'
 import { combineReducers } from 'redux'
@@ -9,6 +10,7 @@ const sagaMiddleware = createSagaMiddleware()
 const reducer = combineReducers({
   // here we will be adding reducers
   coinbase: coinbaseReducer,
+  firestore: firestoreReducer,
 })
 
 export const store = configureStore({

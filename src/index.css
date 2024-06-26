@@ -3,14 +3,32 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'SFMono'; /*Can be any text*/
-  src: local('SFMono-Regular'), url('./assets/SFMono-Regular.otf') format('opentype');
+  /* font-family: 'SFMono';
+  src: local('SFMono-Regular'), url('./assets/SFMono-Regular.otf') format('opentype'); */
+  font-family: 'IBM Plex Mono';
+  src: local('IBM Plex Mono'), url('./assets/ibm_mono.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: local('IBM Plex Mono'), url('./assets/ibm_mono_bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: local('IBM Plex Mono'), url('./assets/ibm_mono_semi.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
 }
 
 :root {
-  font-family: SFMono, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: SFMono, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
+  font-family: IBM Plex Mono, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  font-feature-settings: 'ss04' on;
   /* color-scheme: light dark; */
 
   font-synthesis: none;
@@ -34,6 +52,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #141b2b;
 }
 
 h1 {
