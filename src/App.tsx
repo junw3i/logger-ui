@@ -3,6 +3,7 @@ import { store } from './saga/store'
 
 import Funding from './components/Funding'
 import Nav from './components/Nav'
+import Tokens from './components/Tokens'
 import './App.css'
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       <div className="max-w-screen-2xl">
         <Funding />
         <Nav />
+        <Tokens />
       </div>
       <div className="w-96">
         <div className="mx-auto w-full text-center bg-black text-white h-96">

@@ -93,7 +93,7 @@ function Funding() {
   }
 
   return (
-    <div className="bg-gray-800 text-white m-4 text-sm">
+    <div className="bg-gray-800 text-white m-4 text-sm max-w-[1000px] mx-auto">
       <div className="grid grid_template" ref={gridElement}>
         <div className="text-left font-bold pt-4 pl-6">Exchange</div>
         <div className="col-span-2 font-bold pt-4 bg-gray-700">BTC</div>

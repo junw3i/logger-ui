@@ -16,6 +16,7 @@ interface FirestoreState {
   funding: ExchangeStats[]
   exchanges: ExchangeData[]
   debank: DebankData[]
+  breakdown: BreakdownData
 }
 
 interface Position {
@@ -45,10 +46,38 @@ export interface DebankData {
   updatedAt: number
 }
 
+export interface TokenData {
+  amount: number
+  chain: string
+  isStable: boolean
+  location: string
+  price: number
+  symbol: string
+}
+
+export interface WalletData {
+  tokens: TokenData[]
+  updatedAt: number
+}
+
+export interface BreakdownData {
+  walletNav: number
+  farmNav: number
+  tokens: {
+    symbol: string
+    value: number
+  }[]
+}
+
 const initialState: FirestoreState = {
   funding: [],
   exchanges: [],
   debank: [],
+  breakdown: {
+    walletNav: 0,
+    farmNav: 0,
+    tokens: [],
+  },
 }
 
 export const fundingSlice = createSlice({
@@ -64,9 +93,12 @@ export const fundingSlice = createSlice({
     updateDebank: (state, action) => {
       state.debank = action.payload
     },
+    updateBreakdown: (state, action) => {
+      state.breakdown = action.payload
+    },
   },
 })
 
-export const { updateFunding, updateExchanges, updateDebank } = fundingSlice.actions
+export const { updateFunding, updateExchanges, updateDebank, updateBreakdown } = fundingSlice.actions
 
 export default fundingSlice.reducer

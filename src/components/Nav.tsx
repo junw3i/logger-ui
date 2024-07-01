@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react'
 import BigNumber from 'bignumber.js'
 import { useAppSelector } from '../hooks'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
@@ -9,7 +10,8 @@ function BNWrapper(value, dp, suffix?) {
 }
 
 function BoxWrapper({ children }) {
-  return <div className="max-w-[25%] basis-1/4 px-[1px]">{children}</div>
+  // return <div className="max-w-[25%] basis-1/4 px-[1px]">{children}</div>
+  return <div className="w-[200px] px-[1px]">{children}</div>
 }
 
 function BoxData({ title, value, isLoaded }) {
@@ -20,12 +22,47 @@ function BoxData({ title, value, isLoaded }) {
     </div>
   )
 }
+
+function calculateNAV(exchangeData, debankData) {
+  const exchangeTotal = exchangeData.reduce((acc, { nav }) => {
+    return acc.plus(nav)
+  }, new BigNumber(0))
+  const debankTotal = debankData.reduce((acc, { totalValue }) => {
+    return acc.plus(totalValue)
+  }, new BigNumber(0))
+  return exchangeTotal.plus(debankTotal).toFormat(2)
+}
+
+function calculateExposure(exchangeData, debankData) {
+  const exchangeTotal = exchangeData.reduce((acc, { positions }) => {
+    const accountTotal = positions.reduce((acc2, { position_value, net_size }) => {
+      if (net_size > 0) return acc2.plus(position_value)
+      return acc2.minus(position_value)
+    }, new BigNumber(0))
+    return acc.plus(accountTotal)
+  }, new BigNumber(0))
+  const debankTotal = new BigNumber(0)
+  return exchangeTotal.plus(debankTotal).toFormat(2)
+}
+
+function calculateStables(tokens) {
+  let stables = 0
+  for (const token of tokens) {
+    if (token.symbol === 'USD') {
+      stables += token.value
+    }
+  }
+  return stables
+}
+
 function Nav() {
   const exchangeData = useAppSelector((state) => state.firestore.exchanges)
   const debankData = useAppSelector((state) => state.firestore.debank)
   const priceData = useAppSelector((state) => state.coinbase.price)
-  // console.log('ex', exchangeData)
-  console.log('priceData', priceData)
+  const breakdownData = useAppSelector((state) => state.firestore.breakdown)
+  const nav = useMemo(() => calculateNAV(exchangeData, debankData), [debankData, exchangeData])
+  const exposure = useMemo(() => calculateExposure(exchangeData, debankData), [debankData, exchangeData])
+  const stables = useMemo(() => calculateStables(breakdownData.tokens), [breakdownData.tokens])
 
   return (
     <SkeletonTheme baseColor="#5294e0" highlightColor="#96c7ff" borderRadius="0.5rem" duration={4}>
@@ -37,17 +74,36 @@ function Nav() {
         </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="NAV" value="$2,321.23" isLoaded={false} />
+            <BoxData title="NAV" value={`$${nav}`} isLoaded={true} />
+          </div>
+        </BoxWrapper>
+
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="STABLES" value={`$${new BigNumber(stables).toFormat(0)}`} isLoaded={stables !== 0} />
           </div>
         </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="EXPOSURE" value="$2,321.23" isLoaded={false} />
+            <BoxData
+              title="WALLET"
+              value={`$${new BigNumber(breakdownData.walletNav).toFormat(0)}`}
+              isLoaded={breakdownData.walletNav !== 0}
+            />
           </div>
         </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="STABLES" value="$2,321.23" isLoaded={false} />
+            <BoxData
+              title="FARMING"
+              value={`$${new BigNumber(breakdownData.farmNav).toFormat(0)}`}
+              isLoaded={breakdownData.farmNav !== 0}
+            />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="EXPOSURE" value={`$${exposure}`} isLoaded={true} />
           </div>
         </BoxWrapper>
       </div>
