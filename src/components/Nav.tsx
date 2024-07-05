@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js'
 import { useAppSelector } from '../hooks'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import { dollarValue } from './utils'
 
 function BNWrapper(value, dp, suffix?) {
   const v = value || value === 0 ? new BigNumber(value).toFormat(dp) : new BigNumber(0).toFormat(dp)
@@ -11,7 +12,7 @@ function BNWrapper(value, dp, suffix?) {
 
 function BoxWrapper({ children }) {
   // return <div className="max-w-[25%] basis-1/4 px-[1px]">{children}</div>
-  return <div className="w-[200px] px-[1px]">{children}</div>
+  return <div className="w-[200px] px-[1px] mt-[1px]">{children}</div>
 }
 
 function BoxData({ title, value, isLoaded }) {
@@ -30,7 +31,7 @@ function calculateNAV(exchangeData, debankData) {
   const debankTotal = debankData.reduce((acc, { totalValue }) => {
     return acc.plus(totalValue)
   }, new BigNumber(0))
-  return exchangeTotal.plus(debankTotal).toFormat(2)
+  return exchangeTotal.plus(debankTotal)
 }
 
 function calculateExposure(exchangeData, debankData) {
@@ -60,13 +61,22 @@ function Nav() {
   const debankData = useAppSelector((state) => state.firestore.debank)
   const priceData = useAppSelector((state) => state.coinbase.price)
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
+  const yieldData = useAppSelector((state) => state.firestore.yield)
   const nav = useMemo(() => calculateNAV(exchangeData, debankData), [debankData, exchangeData])
   const exposure = useMemo(() => calculateExposure(exchangeData, debankData), [debankData, exchangeData])
   const stables = useMemo(() => calculateStables(breakdownData.tokens), [breakdownData.tokens])
+  const totalYield = useMemo(() => {
+    const positionsYield = Object.values(yieldData).reduce((acc, value) => {
+      return acc.plus(value)
+    }, new BigNumber(0))
+    return new BigNumber(breakdownData.farmNav).times(0.1).plus(positionsYield)
+  }, [yieldData, breakdownData.farmNav])
+
+  const yieldApr = totalYield.dividedBy(nav).times(100).toFormat(2)
 
   return (
     <SkeletonTheme baseColor="#5294e0" highlightColor="#96c7ff" borderRadius="0.5rem" duration={4}>
-      <div className=" text-white m-4 text-sm flex">
+      <div className=" text-white m-4 text-sm flex max-w-[1200px] flex-wrap">
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData title="ETH" value={`$${priceData}`} isLoaded={priceData !== '0'} />
@@ -74,7 +84,7 @@ function Nav() {
         </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="NAV" value={`$${nav}`} isLoaded={true} />
+            <BoxData title="NAV" value={`$${nav.toFormat(2)}`} isLoaded={true} />
           </div>
         </BoxWrapper>
 
@@ -104,6 +114,16 @@ function Nav() {
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData title="EXPOSURE" value={`$${exposure}`} isLoaded={true} />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="YIELD" value={dollarValue(totalYield.toNumber(), 0)} isLoaded={true} />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="YIELD APR" value={`${yieldApr}%`} isLoaded={true} />
           </div>
         </BoxWrapper>
       </div>

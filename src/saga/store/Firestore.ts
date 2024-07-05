@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { update } from 'firebase/database'
 
 interface Rate {
   oi: number
@@ -12,11 +13,15 @@ interface ExchangeStats {
   updatedAt: number
 }
 
+interface Yield {
+  [key: string]: number
+}
 interface FirestoreState {
   funding: ExchangeStats[]
   exchanges: ExchangeData[]
   debank: DebankData[]
   breakdown: BreakdownData
+  yield: Yield
 }
 
 interface Position {
@@ -78,6 +83,7 @@ const initialState: FirestoreState = {
     farmNav: 0,
     tokens: [],
   },
+  yield: {},
 }
 
 export const fundingSlice = createSlice({
@@ -96,9 +102,15 @@ export const fundingSlice = createSlice({
     updateBreakdown: (state, action) => {
       state.breakdown = action.payload
     },
+    updateYield: (state, action) => {
+      state.yield = {
+        ...state.yield,
+        ...action.payload,
+      }
+    },
   },
 })
 
-export const { updateFunding, updateExchanges, updateDebank, updateBreakdown } = fundingSlice.actions
+export const { updateFunding, updateExchanges, updateDebank, updateBreakdown, updateYield } = fundingSlice.actions
 
 export default fundingSlice.reducer

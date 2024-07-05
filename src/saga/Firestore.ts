@@ -9,6 +9,7 @@ import {
   TokenData,
   WalletData,
   updateBreakdown,
+  updateYield,
 } from './store/Firestore'
 import { put } from 'redux-saga/effects'
 import dayjs from 'dayjs'
@@ -50,10 +51,31 @@ async function getHyperliquid() {
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ExchangeData) }))
 }
 
+/* calculates the annual funding cost */
+function calculateFunding(net_size, notional, rate) {
+  const notionalValue = net_size > 0 ? notional : -notional
+  return -(notionalValue * rate) / 100
+}
 export function* hlSaga() {
   try {
     const data = yield getHyperliquid()
-    yield put(updateExchanges(data))
+    const now = dayjs().unix()
+    const yieldInfo = {}
+    const filteredData = data.filter((exchange) => now - exchange.updatedAt < 3600 * 2)
+    const computedData = filteredData.map((exchange) => {
+      const { positions } = exchange
+      let fundingAmount = 0
+      for (const position of positions) {
+        const { net_size, position_value, funding } = position
+        fundingAmount += calculateFunding(net_size, position_value, funding)
+      }
+      yieldInfo[exchange.id] = fundingAmount
+
+      return { ...exchange, fundingAmount }
+    })
+
+    yield put(updateYield(yieldInfo))
+    yield put(updateExchanges(computedData))
   } catch (error) {
     console.error(error)
   }
@@ -141,9 +163,6 @@ export function* walletsSaga() {
         farmValue += token.amount * token.price
       }
     }
-    console.log(aggregatedTokens)
-    console.log(walletNav)
-    console.log(farmValue)
 
     yield put(
       updateBreakdown({

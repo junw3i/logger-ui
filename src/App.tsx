@@ -4,6 +4,7 @@ import { store } from './saga/store'
 import Funding from './components/Funding'
 import Nav from './components/Nav'
 import Tokens from './components/Tokens'
+import Positions from './components/Positions'
 import './App.css'
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Funding />
         <Nav />
         <Tokens />
+        <Positions />
       </div>
       <div className="w-96">
         <div className="mx-auto w-full text-center bg-black text-white h-96">
