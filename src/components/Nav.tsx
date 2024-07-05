@@ -1,14 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import BigNumber from 'bignumber.js'
 import { useAppSelector } from '../hooks'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { dollarValue } from './utils'
-
-function BNWrapper(value, dp, suffix?) {
-  const v = value || value === 0 ? new BigNumber(value).toFormat(dp) : new BigNumber(0).toFormat(dp)
-  return suffix && v !== '' ? `${v}${suffix}` : v
-}
 
 function BoxWrapper({ children }) {
   // return <div className="max-w-[25%] basis-1/4 px-[1px]">{children}</div>
@@ -34,7 +29,7 @@ function calculateNAV(exchangeData, debankData) {
   return exchangeTotal.plus(debankTotal)
 }
 
-function calculateExposure(exchangeData, debankData) {
+function calculateExposure(exchangeData) {
   const exchangeTotal = exchangeData.reduce((acc, { positions }) => {
     const accountTotal = positions.reduce((acc2, { position_value, net_size }) => {
       if (net_size > 0) return acc2.plus(position_value)
@@ -63,7 +58,7 @@ function Nav() {
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
   const yieldData = useAppSelector((state) => state.firestore.yield)
   const nav = useMemo(() => calculateNAV(exchangeData, debankData), [debankData, exchangeData])
-  const exposure = useMemo(() => calculateExposure(exchangeData, debankData), [debankData, exchangeData])
+  const exposure = useMemo(() => calculateExposure(exchangeData), [exchangeData])
   const stables = useMemo(() => calculateStables(breakdownData.tokens), [breakdownData.tokens])
   const totalYield = useMemo(() => {
     const positionsYield = Object.values(yieldData).reduce((acc, value) => {

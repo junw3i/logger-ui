@@ -6,7 +6,6 @@ import {
   updateExchanges,
   DebankData,
   updateDebank,
-  TokenData,
   WalletData,
   updateBreakdown,
   updateYield,
