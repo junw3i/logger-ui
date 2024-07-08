@@ -98,6 +98,10 @@ async function getWallets() {
   const querySnapshot = await getDocs(collection(db, 'wallets'))
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as WalletData[]) }))
 }
+async function getExchanges() {
+  const querySnapshot = await getDocs(collection(db, 'exchanges'))
+  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ExchangeData[]) }))
+}
 
 function isETH(symbol: string): boolean {
   if (symbol.toLowerCase().includes('eth')) return true
@@ -119,9 +123,21 @@ export function* walletsSaga() {
         })
       }
     }
+    const exchanges = yield getExchanges()
+    exchanges.forEach((exchange) => {
+      const { assets, updatedAt } = exchange
+      if (updatedAt > unixThreshold) {
+        assets.forEach((asset) => {
+          tokenList.push({ ...asset, location: 'exchange', address: exchange.id })
+        })
+      }
+    })
     tokenList.forEach((token) => {
       const { symbol, amount, price, isStable } = token
-      const symbol_ = isStable ? 'USD' : symbol
+      let symbol_ = isStable ? 'USD' : symbol
+      if (symbol_.includes('BTC')) {
+        symbol_ = 'BTC'
+      }
 
       if (tokensMap[symbol_]) {
         tokensMap[symbol_].amount += amount
@@ -147,6 +163,7 @@ export function* walletsSaga() {
         aggregated[s] = value
       }
     })
+
     let walletNav = 0
     const aggregatedTokens = Object.keys(aggregated).map((symbol) => {
       walletNav += aggregated[symbol]
@@ -158,7 +175,7 @@ export function* walletsSaga() {
     // get farm data
     let farmValue = 0
     for (const token of tokenList) {
-      if (token.location !== 'wallet') {
+      if (token.location !== 'wallet' || token.location !== 'exchange') {
         farmValue += token.amount * token.price
       }
     }

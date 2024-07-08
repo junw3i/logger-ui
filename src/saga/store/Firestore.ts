@@ -37,6 +37,7 @@ export interface ExchangeData {
   nav: number
   positions: Position[]
   updatedAt: number
+  assets: TokenData[]
 }
 
 interface ChainData {
@@ -54,7 +55,7 @@ export interface TokenData {
   amount: number
   chain: string
   isStable: boolean
-  location: string
+  location?: string
   price: number
   symbol: string
 }

@@ -4,7 +4,6 @@ import { useAppSelector } from '../hooks'
 import { dollarValue } from './utils'
 
 function Row(positions) {
-  console.log(positions)
   const { entry_price, coin, upnl, position_value, liquidation_price, net_size, funding, mark_price } = positions
   const dp = new BigNumber(entry_price).dp()
   const percent = net_size > 0 ? mark_price / entry_price - 1 : entry_price / mark_price - 1
