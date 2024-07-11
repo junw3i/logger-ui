@@ -63,28 +63,28 @@ function Funding() {
     return (
       // <div key={id} className="flex">
       <>
-        <Cell col={1} row={i + 1} className={`p-1 text-left pl-6`}>
+        <Cell key={`id-${i}`} col={1} row={i + 1} className={`p-1 text-left pl-6`}>
           {id}
         </Cell>
-        <Cell col={2} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
+        <Cell key={`btc-rate-${i}`} col={2} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
           {BNWrapper(btc?.rate, 1, '%')}
         </Cell>
-        <Cell col={3} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
+        <Cell key={`btc-oi-${i}`} col={3} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
           {BNWrapper(btc?.oi, 0, 'M')}
         </Cell>
-        <Cell col={4} row={i + 1} className={`text-right px-4 tracking-wide py-1`}>
+        <Cell key={`eth-rate-${i}`} col={4} row={i + 1} className={`text-right px-4 tracking-wide py-1`}>
           {BNWrapper(eth?.rate, 1, '%')}
         </Cell>
-        <Cell col={5} row={i + 1} className={`text-right px-4 tracking-wide py-1`}>
+        <Cell key={`eth-oi-${i}`} col={5} row={i + 1} className={`text-right px-4 tracking-wide py-1`}>
           {BNWrapper(eth?.oi, 0, 'M')}
         </Cell>
-        <Cell col={6} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
+        <Cell key={`sol-rate-${i}`} col={6} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
           {BNWrapper(sol?.rate, 1, '%')}
         </Cell>
-        <Cell col={7} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
+        <Cell key={`sol-oi-${i}`} col={7} row={i + 1} className={`text-right px-4 tracking-wide py-1 bg-gray-700`}>
           {BNWrapper(sol?.oi, 0, 'M')}
         </Cell>
-        <Cell col={8} row={i + 1} className={`text-right px-4 tracking-wide py-1 pr-6`}>
+        <Cell key={`tz-${i}`} col={8} row={i + 1} className={`text-right px-4 tracking-wide py-1 pr-6`}>
           {diff}m ago
         </Cell>
       </>

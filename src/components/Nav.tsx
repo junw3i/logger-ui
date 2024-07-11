@@ -67,7 +67,7 @@ function Nav() {
     return new BigNumber(breakdownData.farmNav).times(0.1).plus(positionsYield)
   }, [yieldData, breakdownData.farmNav])
 
-  const yieldApr = totalYield.dividedBy(nav).times(100).toFormat(2)
+  const yieldApr = totalYield.dividedBy(breakdownData.walletNav).times(100).toFormat(2)
 
   return (
     <SkeletonTheme baseColor="#5294e0" highlightColor="#96c7ff" borderRadius="0.5rem" duration={4}>

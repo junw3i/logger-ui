@@ -12,6 +12,7 @@ import {
 } from './store/Firestore'
 import { put } from 'redux-saga/effects'
 import dayjs from 'dayjs'
+import { NON_EVM_FARM_ETH } from '../constants'
 
 interface FundingData {
   btc: { rate: number; oi: number }
@@ -45,7 +46,7 @@ export function* fundingSaga() {
   }
 }
 
-async function getHyperliquid() {
+async function getExchanges() {
   const querySnapshot = await getDocs(collection(db, 'exchanges'))
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ExchangeData) }))
 }
@@ -57,7 +58,7 @@ function calculateFunding(net_size, notional, rate) {
 }
 export function* hlSaga() {
   try {
-    const data = yield getHyperliquid()
+    const data = yield getExchanges()
     const now = dayjs().unix()
     const yieldInfo = {}
     const filteredData = data.filter((exchange) => now - exchange.updatedAt < 3600 * 2)
@@ -73,6 +74,7 @@ export function* hlSaga() {
       return { ...exchange, fundingAmount }
     })
 
+    computedData.sort((a, b) => b.nav - a.nav)
     yield put(updateYield(yieldInfo))
     yield put(updateExchanges(computedData))
   } catch (error) {
@@ -98,15 +100,23 @@ async function getWallets() {
   const querySnapshot = await getDocs(collection(db, 'wallets'))
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as WalletData[]) }))
 }
-async function getExchanges() {
-  const querySnapshot = await getDocs(collection(db, 'exchanges'))
-  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ExchangeData[]) }))
-}
+// async function getExchanges() {
+//   const querySnapshot = await getDocs(collection(db, 'exchanges'))
+//   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ExchangeData[]) }))
+// }
 
 function isETH(symbol: string): boolean {
   if (symbol.toLowerCase().includes('eth')) return true
   if (symbol.includes('Re7LRT')) return true
   return false
+}
+
+async function getETHPPrice() {
+  // get eth price from coinbase
+  const url = 'https://api.pro.coinbase.com/products/ETH-USD/ticker'
+  const response = await fetch(url)
+  const data = await response.json()
+  return parseFloat(data.price)
 }
 
 export function* walletsSaga() {
@@ -115,6 +125,20 @@ export function* walletsSaga() {
     const unixThreshold = dayjs().unix() - 3600 * 2
     const tokenList = []
     const tokensMap = {}
+    // infiniex
+    // usual protocol
+    // ekubo
+    const ethPrice = yield getETHPPrice()
+    tokenList.push({
+      amount: NON_EVM_FARM_ETH,
+      chain: 'starknet',
+      isStable: false,
+      location: 'ekubo',
+      price: ethPrice,
+      address: 'ekubo',
+      symbol: 'ETH',
+    })
+
     for (const wallet of data) {
       const { updatedAt, tokens } = wallet
       if (updatedAt > unixThreshold) {
@@ -175,7 +199,7 @@ export function* walletsSaga() {
     // get farm data
     let farmValue = 0
     for (const token of tokenList) {
-      if (token.location !== 'wallet' || token.location !== 'exchange') {
+      if (token.location !== 'wallet' && token.location !== 'exchange') {
         farmValue += token.amount * token.price
       }
     }

@@ -1,0 +1,1 @@
+export const NON_EVM_FARM_ETH = 127.6272727
