@@ -10,9 +10,10 @@ import {
   updateBreakdown,
   updateYield,
 } from './store/Firestore'
-import { put } from 'redux-saga/effects'
+import { delay, put, select } from 'redux-saga/effects'
 import dayjs from 'dayjs'
-import { NON_EVM_FARM_ETH } from '../constants'
+import { getEthPrice } from './selectors'
+import BigNumber from 'bignumber.js'
 
 interface FundingData {
   btc: { rate: number; oi: number }
@@ -56,18 +57,37 @@ function calculateFunding(net_size, notional, rate) {
   const notionalValue = net_size > 0 ? notional : -notional
   return -(notionalValue * rate) / 100
 }
-export function* hlSaga() {
+export function* exchangesSaga() {
   try {
     const data = yield getExchanges()
     const now = dayjs().unix()
     const yieldInfo = {}
     const filteredData = data.filter((exchange) => now - exchange.updatedAt < 3600 * 2)
+    // wait for eth price != 0
+    let ethPrice = '0'
+    while (ethPrice === '0') {
+      ethPrice = yield select(getEthPrice)
+      yield delay(1000)
+    }
     const computedData = filteredData.map((exchange) => {
       const { positions } = exchange
       let fundingAmount = 0
       for (const position of positions) {
         const { net_size, position_value, funding } = position
-        fundingAmount += calculateFunding(net_size, position_value, funding)
+        if (exchange.id === 'deribit') {
+          // as options sellers, we used the entry price as the yield
+          if (net_size < 0) {
+            fundingAmount += new BigNumber(net_size)
+              .abs()
+              .times(ethPrice.replace(',', ''))
+              .times(funding)
+              .div(100)
+              .toNumber()
+            console.log('fundingAmount', fundingAmount)
+          }
+        } else {
+          fundingAmount += calculateFunding(net_size, position_value, funding)
+        }
       }
       yieldInfo[exchange.id] = fundingAmount
 
@@ -111,33 +131,12 @@ function isETH(symbol: string): boolean {
   return false
 }
 
-async function getETHPPrice() {
-  // get eth price from coinbase
-  const url = 'https://api.pro.coinbase.com/products/ETH-USD/ticker'
-  const response = await fetch(url)
-  const data = await response.json()
-  return parseFloat(data.price)
-}
-
 export function* walletsSaga() {
   try {
     const data = yield getWallets()
     const unixThreshold = dayjs().unix() - 3600 * 2
     const tokenList = []
     const tokensMap = {}
-    // infiniex
-    // usual protocol
-    // ekubo
-    const ethPrice = yield getETHPPrice()
-    tokenList.push({
-      amount: NON_EVM_FARM_ETH,
-      chain: 'starknet',
-      isStable: false,
-      location: 'ekubo',
-      price: ethPrice,
-      address: 'ekubo',
-      symbol: 'ETH',
-    })
 
     for (const wallet of data) {
       const { updatedAt, tokens } = wallet

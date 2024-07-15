@@ -53,11 +53,9 @@ function calculateStables(tokens) {
 
 function Nav() {
   const exchangeData = useAppSelector((state) => state.firestore.exchanges)
-  const debankData = useAppSelector((state) => state.firestore.debank)
   const priceData = useAppSelector((state) => state.coinbase.price)
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
   const yieldData = useAppSelector((state) => state.firestore.yield)
-  const nav = useMemo(() => calculateNAV(exchangeData, debankData), [debankData, exchangeData])
   const exposure = useMemo(() => calculateExposure(exchangeData), [exchangeData])
   const stables = useMemo(() => calculateStables(breakdownData.tokens), [breakdownData.tokens])
   const totalYield = useMemo(() => {
@@ -79,19 +77,13 @@ function Nav() {
         </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="NAV" value={`$${nav.toFormat(2)}`} isLoaded={true} />
-          </div>
-        </BoxWrapper>
-
-        <BoxWrapper>
-          <div className="box-outline bg-slate-800 p-3">
             <BoxData title="STABLES" value={`$${new BigNumber(stables).toFormat(0)}`} isLoaded={stables !== 0} />
           </div>
         </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData
-              title="WALLET"
+              title="NAV"
               value={`$${new BigNumber(breakdownData.walletNav).toFormat(0)}`}
               isLoaded={breakdownData.walletNav !== 0}
             />
