@@ -43,7 +43,7 @@
 }
 
 .grid_template {
-  grid-template-columns: 158px 1fr 1fr 1fr 1fr 1fr 1fr 1.8fr;
+  grid-template-columns: 158px 1fr 1fr 1fr 1fr 1fr 1fr 120px;
 }
 
 .grid[data-hovered-cell-address^='R1'] .cell[data-address^='R1'],

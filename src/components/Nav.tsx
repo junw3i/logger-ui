@@ -7,7 +7,7 @@ import { dollarValue } from './utils'
 
 function BoxWrapper({ children }) {
   // return <div className="max-w-[25%] basis-1/4 px-[1px]">{children}</div>
-  return <div className="w-[200px] px-[1px] mt-[1px]">{children}</div>
+  return <div className="px-[1px] mt-[1px] w-[50vw] md:w-[200px]">{children}</div>
 }
 
 function BoxData({ title, value, isLoaded }) {
@@ -17,16 +17,6 @@ function BoxData({ title, value, isLoaded }) {
       <div className="text-xs">{title}</div>
     </div>
   )
-}
-
-function calculateNAV(exchangeData, debankData) {
-  const exchangeTotal = exchangeData.reduce((acc, { nav }) => {
-    return acc.plus(nav)
-  }, new BigNumber(0))
-  const debankTotal = debankData.reduce((acc, { totalValue }) => {
-    return acc.plus(totalValue)
-  }, new BigNumber(0))
-  return exchangeTotal.plus(debankTotal)
 }
 
 function calculateExposure(exchangeData) {
@@ -69,7 +59,7 @@ function Nav() {
 
   return (
     <SkeletonTheme baseColor="#5294e0" highlightColor="#96c7ff" borderRadius="0.5rem" duration={4}>
-      <div className=" text-white m-4 text-sm flex max-w-[1200px] flex-wrap">
+      <div className=" text-white  text-sm flex max-w-[1200px] flex-wrap md:m-4">
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData title="ETH" value={`$${priceData}`} isLoaded={priceData !== '0'} />

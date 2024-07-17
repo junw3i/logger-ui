@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js'
 import { useAppSelector } from '../hooks'
 
 import { dollarValue } from './utils'
-import dayjs from 'dayjs'
 
 function Row(positions) {
   const { entry_price, coin, upnl, position_value, liquidation_price, net_size, funding, mark_price } = positions
@@ -42,7 +41,7 @@ function Deribit(data) {
   const { id, accountLeverage, nav, positions, fundingAmount } = data
   const fundingApr = new BigNumber(fundingAmount).dividedBy(nav).times(100).toFormat(2)
   return (
-    <div className="text-white w-[800px] my-4 bg-slate-800 p-4 text-sm" key={id}>
+    <div className="text-white w-[800px] my-2 bg-slate-800 p-4 py-2 text-sm" key={id}>
       <div className="grid grid-cols-4">
         <div className="text-left p-1">{id}</div>
         <div className="text-left p-1">{new BigNumber(accountLeverage).times(100).toFormat(2)}%</div>
@@ -74,7 +73,7 @@ function Exchange(data) {
   }
   const fundingApr = new BigNumber(fundingAmount).dividedBy(nav).times(100).toFormat(2)
   return (
-    <div className="text-white w-[800px] my-4 bg-slate-800 p-4 text-sm" key={id}>
+    <div className="text-white w-[800px] my-2 bg-slate-800 p-4 py-2 text-sm" key={id}>
       <div className="grid grid-cols-4">
         <div className="text-left p-1">{id}</div>
         <div className="text-left p-1">{new BigNumber(accountLeverage).toFormat(2)}X</div>
@@ -102,7 +101,7 @@ function Exchange(data) {
 
 function Positions() {
   const exchanges = useAppSelector((state) => state.firestore.exchanges)
-  return <div>{exchanges.map(Exchange)}</div>
+  return <div className="mt-4">{exchanges.map(Exchange)}</div>
 }
 
 export default Positions

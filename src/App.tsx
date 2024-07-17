@@ -10,13 +10,13 @@ import './App.css'
 function App() {
   return (
     <Provider store={store}>
-      <div className="max-w-screen-2xl">
+      <div className="w-screen overflow md:max-w-screen-2xl ">
         <Funding />
         <Nav />
         <Tokens />
         <Positions />
       </div>
-      <div className="w-96">
+      <div className="w-96 mt-4">
         <div className="mx-auto w-full text-center bg-black text-white h-96">
           <div className="h-6 bg-gray-800 relative flex items-center justify-center">
             <div className="absolute flex space-x-2 pl-2 left-0">

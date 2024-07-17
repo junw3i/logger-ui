@@ -14,7 +14,7 @@ function Tokens() {
 
   return (
     <div>
-      <table className="text-white text-sm bg-slate-800">
+      <table className="text-white text-sm bg-slate-800 mt-4">
         <thead>
           <tr>
             <th className="text-left py-1 pl-6 pt-4">Symbol</th>
