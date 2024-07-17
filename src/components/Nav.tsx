@@ -4,6 +4,7 @@ import { useAppSelector } from '../hooks'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { dollarValue } from './utils'
+import dayjs from 'dayjs'
 
 function BoxWrapper({ children }) {
   // return <div className="max-w-[25%] basis-1/4 px-[1px]">{children}</div>
@@ -46,6 +47,7 @@ function Nav() {
   const priceData = useAppSelector((state) => state.coinbase.price)
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
   const yieldData = useAppSelector((state) => state.firestore.yield)
+  const trendData = useAppSelector((state) => state.firestore.trend)
   const exposure = useMemo(() => calculateExposure(exchangeData), [exchangeData])
   const stables = useMemo(() => calculateStables(breakdownData.tokens), [breakdownData.tokens])
   const totalYield = useMemo(() => {
@@ -56,10 +58,23 @@ function Nav() {
   }, [yieldData, breakdownData.farmNav])
 
   const yieldApr = totalYield.dividedBy(breakdownData.walletNav).times(100).toFormat(2)
+  const difference = useMemo(() => {
+    const unixNow = dayjs().unix()
+    return new BigNumber(unixNow - trendData.start).dividedBy(86400).dp(1).toNumber()
+  }, [trendData.start])
 
   return (
     <SkeletonTheme baseColor="#5294e0" highlightColor="#96c7ff" borderRadius="0.5rem" duration={4}>
       <div className=" text-white  text-sm flex max-w-[1200px] flex-wrap md:m-4">
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData
+              title={trendData.direction.toUpperCase()}
+              value={`${difference} DAYS`}
+              isLoaded={trendData.direction !== ''}
+            />
+          </div>
+        </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData title="ETH" value={`$${priceData}`} isLoaded={priceData !== '0'} />

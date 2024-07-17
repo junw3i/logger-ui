@@ -21,6 +21,7 @@ interface FirestoreState {
   debank: DebankData[]
   breakdown: BreakdownData
   yield: Yield
+  trend: TrendData
 }
 
 interface Position {
@@ -74,6 +75,11 @@ export interface BreakdownData {
   }[]
 }
 
+export interface TrendData {
+  direction: string
+  start: number
+}
+
 const initialState: FirestoreState = {
   funding: [],
   exchanges: [],
@@ -84,6 +90,10 @@ const initialState: FirestoreState = {
     tokens: [],
   },
   yield: {},
+  trend: {
+    direction: '',
+    start: 0,
+  },
 }
 
 export const fundingSlice = createSlice({
@@ -108,9 +118,13 @@ export const fundingSlice = createSlice({
         ...action.payload,
       }
     },
+    updateTrend: (state, action) => {
+      state.trend = action.payload
+    },
   },
 })
 
-export const { updateFunding, updateExchanges, updateDebank, updateBreakdown, updateYield } = fundingSlice.actions
+export const { updateFunding, updateExchanges, updateDebank, updateBreakdown, updateYield, updateTrend } =
+  fundingSlice.actions
 
 export default fundingSlice.reducer

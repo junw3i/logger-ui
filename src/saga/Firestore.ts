@@ -1,4 +1,4 @@
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { db } from '../firebase'
 import {
   ExchangeData,
@@ -9,6 +9,7 @@ import {
   WalletData,
   updateBreakdown,
   updateYield,
+  updateTrend,
 } from './store/Firestore'
 import { delay, put, select } from 'redux-saga/effects'
 import dayjs from 'dayjs'
@@ -20,6 +21,21 @@ interface FundingData {
   eth: { rate: number; oi: number }
   sol: { rate: number; oi: number }
   updatedAt: number
+}
+
+export function* trendSaga() {
+  try {
+    const trend = yield getTrend()
+    console.log(trend)
+    yield put(updateTrend(trend))
+  } catch (error) {
+    console.error(error)
+  }
+}
+async function getTrend() {
+  const docRef = doc(db, 'trend', 'current')
+  const docSnap = await getDoc(docRef)
+  return docSnap.data()
 }
 
 async function getFunding() {
@@ -83,7 +99,6 @@ export function* exchangesSaga() {
               .times(funding)
               .div(100)
               .toNumber()
-            console.log('fundingAmount', fundingAmount)
           }
         } else {
           fundingAmount += calculateFunding(net_size, position_value, funding)
