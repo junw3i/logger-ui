@@ -26,7 +26,6 @@ interface FundingData {
 export function* trendSaga() {
   try {
     const trend = yield getTrend()
-    console.log(trend)
     yield put(updateTrend(trend))
   } catch (error) {
     console.error(error)
@@ -41,6 +40,7 @@ async function getTrend() {
 async function getFunding() {
   const querySnapshot = await getDocs(collection(db, 'funding'))
   const dataList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as FundingData) }))
+
   dataList.sort((a, b) => a.id.localeCompare(b.id))
   const millionedData = dataList.map((row) => {
     return {

@@ -9,6 +9,7 @@ function BNWrapper(value, dp, suffix?) {
 
 function Funding() {
   const data = useAppSelector((state) => state.firestore.funding)
+  console.log(data)
 
   const gridHoveredCellDataAddressAtt = 'data-hovered-cell-address'
   const cellDataAddressAtt = 'data-address'
