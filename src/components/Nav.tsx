@@ -21,8 +21,9 @@ function BoxData({ title, value, isLoaded }) {
 }
 
 function calculateExposure(exchangeData) {
-  const exchangeTotal = exchangeData.reduce((acc, { positions }) => {
-    const accountTotal = positions.reduce((acc2, { position_value, net_size }) => {
+  const exchangeTotal = exchangeData.reduce((acc, e) => {
+    if (e.id === 'deribit') return acc
+    const accountTotal = e.positions.reduce((acc2, { position_value, net_size }) => {
       if (net_size > 0) return acc2.plus(position_value)
       return acc2.minus(position_value)
     }, new BigNumber(0))

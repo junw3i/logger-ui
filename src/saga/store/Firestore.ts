@@ -31,9 +31,12 @@ interface Position {
   upnl: number
   liquidation_price: number
   position_value: number
+  funding: number
+  mark_price: number
 }
 
 export interface ExchangeData {
+  id: string
   accountLeverage: number
   nav: number
   positions: Position[]

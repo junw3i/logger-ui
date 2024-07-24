@@ -10,6 +10,7 @@ import {
   updateBreakdown,
   updateYield,
   updateTrend,
+  TokenData,
 } from './store/Firestore'
 import { delay, put, select } from 'redux-saga/effects'
 import dayjs from 'dayjs'
@@ -73,6 +74,7 @@ function calculateFunding(net_size, notional, rate) {
   const notionalValue = net_size > 0 ? notional : -notional
   return -(notionalValue * rate) / 100
 }
+
 export function* exchangesSaga() {
   try {
     const data = yield getExchanges()
@@ -85,7 +87,8 @@ export function* exchangesSaga() {
       ethPrice = yield select(getEthPrice)
       yield delay(1000)
     }
-    const computedData = filteredData.map((exchange) => {
+
+    const computedData = filteredData.map((exchange: ExchangeData) => {
       const { positions } = exchange
       let fundingAmount = 0
       for (const position of positions) {
@@ -104,6 +107,7 @@ export function* exchangesSaga() {
           fundingAmount += calculateFunding(net_size, position_value, funding)
         }
       }
+
       yieldInfo[exchange.id] = fundingAmount
 
       return { ...exchange, fundingAmount }
@@ -162,16 +166,43 @@ export function* walletsSaga() {
       }
     }
     const exchanges = yield getExchanges()
-    exchanges.forEach((exchange) => {
+    exchanges.forEach((exchange: ExchangeData) => {
       const { assets, updatedAt } = exchange
       if (updatedAt > unixThreshold) {
+        if (exchange.id === 'hyper_42c1') {
+          // assumes this account is used for cash and carry
+          // derives stables from positions and nav
+          for (const position of exchange.positions) {
+            const tokenData: TokenData = {
+              amount: position.net_size,
+              chain: 'hyperliquid',
+              isStable: false,
+              location: 'exchange',
+              price: position.mark_price,
+              symbol: position.coin,
+            }
+            const usdData: TokenData = {
+              amount: position.position_value,
+              chain: 'hyperliquid',
+              isStable: true,
+              location: 'exchange',
+              price: 1,
+              symbol: 'USD',
+            }
+
+            tokenList.push({ ...tokenData, location: 'exchange', address: exchange.id })
+            tokenList.push({ ...usdData, location: 'exchange', address: exchange.id })
+          }
+        }
         assets.forEach((asset) => {
           tokenList.push({ ...asset, location: 'exchange', address: exchange.id })
         })
       }
     })
+
     tokenList.forEach((token) => {
       const { symbol, amount, price, isStable } = token
+
       let symbol_ = isStable ? 'USD' : symbol
       if (symbol_.includes('BTC')) {
         symbol_ = 'BTC'
