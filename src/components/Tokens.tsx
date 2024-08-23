@@ -5,7 +5,6 @@ import { dollarValue } from './utils'
 
 function Tokens() {
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
-  console.log(breakdownData)
 
   function getPercentage(value, total) {
     const v = new BigNumber(value).dividedBy(total).times(100).toFormat(1)
