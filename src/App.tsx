@@ -30,7 +30,7 @@ function App() {
             <div>header</div>
           </div>
           <div className="p-4">
-            <h1 className="animated-text fade-in">Vite + React</h1>
+            <h1 className="animated-text fade-in">Logger</h1>
           </div>
         </div>
       </div>
