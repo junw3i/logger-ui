@@ -39,11 +39,13 @@ async function getTrend() {
 }
 
 async function getFunding() {
+  const unix = dayjs().unix()
   const querySnapshot = await getDocs(collection(db, 'funding'))
   const dataList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as FundingData) }))
+  const currentList = dataList.filter((row) => unix - row.updatedAt < 3600 * 3)
 
-  dataList.sort((a, b) => a.id.localeCompare(b.id))
-  const millionedData = dataList.map((row) => {
+  currentList.sort((a, b) => a.id.localeCompare(b.id))
+  const millionedData = currentList.map((row) => {
     return {
       id: row.id,
       btc: { rate: row.btc ? row.btc.rate : 0, oi: row.btc?.oi / 1000000 },
