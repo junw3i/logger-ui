@@ -10,7 +10,7 @@ import './App.css'
 function App() {
   return (
     <Provider store={store}>
-      <div className="w-screen overflow md:max-w-screen-2xl ">
+      <div className="w-screen md:max-w-screen-2xl ">
         <a href="https://pro.amberdata.io/options/deribit/eth/historic/" target="_blank">
           GVOL
         </a>

@@ -155,7 +155,7 @@ function isETH(symbol: string): boolean {
 export function* walletsSaga() {
   try {
     const data = yield getWallets()
-    const unixThreshold = dayjs().unix() - 3600 * 2
+    const unixThreshold = dayjs().unix() - 3600 * 2 // 2 hours
     const tokenList = []
     const tokensMap = {}
 

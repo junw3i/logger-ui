@@ -93,19 +93,21 @@ function Funding() {
   }
 
   return (
-    <div className="bg-gray-800 text-white m-4 text-sm max-w-[1000px] mx-auto">
-      <div className="grid grid_template" ref={gridElement}>
-        <div className="text-left font-bold pt-4 pl-6">Exchange</div>
-        <div className="col-span-2 font-bold pt-4 bg-gray-700">BTC</div>
-        <div className="col-span-2 font-bold pt-4">ETH</div>
-        <div className="col-span-2 font-bold pt-4 bg-gray-700">SOL</div>
-        <div className="text-right font-bold pt-4 pr-6">Updated</div>
-        {data.map(renderRow)}
-        <div className="col-span-1 h-3"></div>
-        <div className="col-span-2 h-3 bg-gray-700"></div>
-        <div className="col-span-2 h-3"></div>
-        <div className="col-span-2 h-3 bg-gray-700"></div>
-        <div className="col-span-1 h-3"></div>
+    <div className="overflow-auto w-screen">
+      <div className="bg-gray-800 text-white m-4 text-sm max-w-[1000px] mx-auto">
+        <div className="grid grid_template" ref={gridElement}>
+          <div className="text-left font-bold pt-4 pl-6">Exchange</div>
+          <div className="col-span-2 font-bold pt-4 bg-gray-700">BTC</div>
+          <div className="col-span-2 font-bold pt-4">ETH</div>
+          <div className="col-span-2 font-bold pt-4 bg-gray-700">SOL</div>
+          <div className="text-right font-bold pt-4 pr-6">Updated</div>
+          {data.map(renderRow)}
+          <div className="col-span-1 h-3"></div>
+          <div className="col-span-2 h-3 bg-gray-700"></div>
+          <div className="col-span-2 h-3"></div>
+          <div className="col-span-2 h-3 bg-gray-700"></div>
+          <div className="col-span-1 h-3"></div>
+        </div>
       </div>
     </div>
   )
