@@ -47,18 +47,18 @@ function Nav() {
   const exchangeData = useAppSelector((state) => state.firestore.exchanges)
   const priceData = useAppSelector((state) => state.coinbase.price)
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
-  const yieldData = useAppSelector((state) => state.firestore.yield)
+  // const yieldData = useAppSelector((state) => state.firestore.yield)
   const trendData = useAppSelector((state) => state.firestore.trend)
   const exposure = useMemo(() => calculateExposure(exchangeData), [exchangeData])
   const stables = useMemo(() => calculateStables(breakdownData.tokens), [breakdownData.tokens])
-  const totalYield = useMemo(() => {
-    const positionsYield = Object.values(yieldData).reduce((acc, value) => {
-      return acc.plus(value)
-    }, new BigNumber(0))
-    return new BigNumber(breakdownData.farmNav).times(0.1).plus(positionsYield)
-  }, [yieldData, breakdownData.farmNav])
+  // const totalYield = useMemo(() => {
+  //   const positionsYield = Object.values(yieldData).reduce((acc, value) => {
+  //     return acc.plus(value)
+  //   }, new BigNumber(0))
+  //   return new BigNumber(breakdownData.farmNav).times(0.1).plus(positionsYield)
+  // }, [yieldData, breakdownData.farmNav])
 
-  const yieldApr = totalYield.dividedBy(breakdownData.walletNav).times(100).toFormat(2)
+  // const yieldApr = totalYield.dividedBy(breakdownData.walletNav).times(100).toFormat(2)
   const difference = useMemo(() => {
     const unixNow = dayjs().unix()
     return new BigNumber(unixNow - trendData.start).dividedBy(86400).dp(1).toNumber()
@@ -107,16 +107,6 @@ function Nav() {
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData title="EXPOSURE" value={`$${exposure}`} isLoaded={true} />
-          </div>
-        </BoxWrapper>
-        <BoxWrapper>
-          <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="YIELD" value={dollarValue(totalYield.toNumber(), 0)} isLoaded={true} />
-          </div>
-        </BoxWrapper>
-        <BoxWrapper>
-          <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="YIELD APR" value={`${yieldApr}%`} isLoaded={true} />
           </div>
         </BoxWrapper>
       </div>

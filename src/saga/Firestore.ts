@@ -81,7 +81,6 @@ export function* exchangesSaga() {
   try {
     const data = yield getExchanges()
     const now = dayjs().unix()
-    const yieldInfo = {}
     const filteredData = data.filter((exchange) => now - exchange.updatedAt < 3600 * 2)
     // wait for eth price != 0
     let ethPrice = '0'
@@ -110,13 +109,10 @@ export function* exchangesSaga() {
         }
       }
 
-      yieldInfo[exchange.id] = fundingAmount
-
       return { ...exchange, fundingAmount }
     })
 
     computedData.sort((a, b) => b.nav - a.nav)
-    yield put(updateYield(yieldInfo))
     yield put(updateExchanges(computedData))
   } catch (error) {
     console.error(error)
