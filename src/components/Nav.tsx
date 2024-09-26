@@ -97,15 +97,6 @@ function Nav() {
         </BoxWrapper>
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
-            <BoxData
-              title="FARMING"
-              value={`$${new BigNumber(breakdownData.farmNav).toFormat(0)}`}
-              isLoaded={breakdownData.farmNav !== 0}
-            />
-          </div>
-        </BoxWrapper>
-        <BoxWrapper>
-          <div className="box-outline bg-slate-800 p-3">
             <BoxData title="EXPOSURE" value={`$${exposure}`} isLoaded={true} />
           </div>
         </BoxWrapper>

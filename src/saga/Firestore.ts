@@ -239,18 +239,9 @@ export function* walletsSaga() {
 
     aggregatedTokens.sort((a, b) => b.value - a.value)
 
-    // get farm data
-    let farmValue = 0
-    for (const token of tokenList) {
-      if (token.location !== 'wallet' && token.location !== 'exchange') {
-        farmValue += token.amount * token.price
-      }
-    }
-
     yield put(
       updateBreakdown({
         walletNav,
-        farmNav: farmValue,
         tokens: aggregatedTokens,
       })
     )

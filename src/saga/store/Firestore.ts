@@ -67,7 +67,6 @@ export interface WalletData {
 
 export interface BreakdownData {
   walletNav: number
-  farmNav: number
   tokens: {
     symbol: string
     value: number
@@ -85,7 +84,6 @@ const initialState: FirestoreState = {
   debank: [],
   breakdown: {
     walletNav: 0,
-    farmNav: 0,
     tokens: [],
   },
   trend: {
