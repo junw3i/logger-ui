@@ -8,7 +8,6 @@ import {
   updateDebank,
   WalletData,
   updateBreakdown,
-  updateYield,
   updateTrend,
   TokenData,
 } from './store/Firestore'
