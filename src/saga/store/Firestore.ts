@@ -38,6 +38,7 @@ export interface ExchangeData {
   positions: Position[]
   updatedAt: number
   assets: TokenData[]
+  exchange?: string
 }
 
 interface ChainData {
@@ -71,6 +72,11 @@ export interface BreakdownData {
     symbol: string
     value: number
   }[]
+  topExposures: {
+    symbol: string
+    value: string
+    percent: number
+  }[]
 }
 
 export interface TrendData {
@@ -85,6 +91,7 @@ const initialState: FirestoreState = {
   breakdown: {
     walletNav: 0,
     tokens: [],
+    topExposures: [],
   },
   trend: {
     direction: '',

@@ -147,6 +147,16 @@ function isETH(symbol: string): boolean {
   return false
 }
 
+function updatePositionValue(market: string, data, position) {
+  const positionValue = position.net_size > 0 ? position.position_value : -position.position_value
+  if (data[market]) {
+    data[market] += positionValue
+  } else {
+    data[market] = positionValue
+  }
+  return data
+}
+
 export function* walletsSaga() {
   try {
     const data = yield getWallets()
@@ -163,32 +173,26 @@ export function* walletsSaga() {
       }
     }
     const exchanges = yield getExchanges()
+    let positionsValue = {}
     exchanges.forEach((exchange: ExchangeData) => {
-      const { assets, updatedAt } = exchange
+      const { assets, updatedAt, positions } = exchange
       if (updatedAt > unixThreshold) {
-        if (exchange.id === 'hyper_42c1') {
-          // assumes this account is used for cash and carry
-          // derives stables from positions and nav
-          for (const position of exchange.positions) {
-            const tokenData: TokenData = {
-              amount: position.net_size,
-              chain: 'hyperliquid',
-              isStable: false,
-              location: 'exchange',
-              price: position.mark_price,
-              symbol: position.coin,
+        if (exchange.exchange === 'deribit') {
+          for (const position of positions) {
+            if (position.coin.includes('PERPETUAL')) {
+              const market = position.coin.split('-')[0]
+              positionsValue = updatePositionValue(market, positionsValue, position)
             }
-            const usdData: TokenData = {
-              amount: position.position_value,
-              chain: 'hyperliquid',
-              isStable: true,
-              location: 'exchange',
-              price: 1,
-              symbol: 'USD',
-            }
-
-            tokenList.push({ ...tokenData, location: 'exchange', address: exchange.id })
-            tokenList.push({ ...usdData, location: 'exchange', address: exchange.id })
+          }
+        } else if (exchange.exchange === 'hyperliquid') {
+          for (const position of positions) {
+            positionsValue = updatePositionValue(position.coin, positionsValue, position)
+          }
+        } else if (exchange.exchange === 'binance') {
+          for (const position of positions) {
+            // remove the 'USDT' from the coin name
+            const market = position.coin.split('USDT')[0]
+            positionsValue = updatePositionValue(market, positionsValue, position)
           }
         }
         assets.forEach((asset) => {
@@ -199,7 +203,6 @@ export function* walletsSaga() {
 
     tokenList.forEach((token) => {
       const { symbol, amount, price, isStable } = token
-
       let symbol_ = isStable ? 'USD' : symbol
       if (symbol_.includes('BTC')) {
         symbol_ = 'BTC'
@@ -238,10 +241,46 @@ export function* walletsSaga() {
 
     aggregatedTokens.sort((a, b) => b.value - a.value)
 
+    // calcualate token exposure
+    // fetch all positions
+
+    const exposures = aggregatedTokens.map((token) => {
+      const { symbol, value } = token
+      if (positionsValue[symbol]) {
+        return {
+          symbol,
+          value: value + positionsValue[symbol],
+        }
+      }
+      return token
+    })
+    const positionsValueKeys = Object.keys(positionsValue)
+    for (const key of positionsValueKeys) {
+      const found = exposures.find((exposure) => exposure.symbol === key)
+      if (!found) {
+        exposures.push({ symbol: key, value: positionsValue[key] })
+      }
+    }
+    exposures.sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+    const topExposures = []
+    for (const exposure of exposures) {
+      const percent = new BigNumber(exposure.value).abs().dividedBy(walletNav).times(100).dp(0)
+      if (percent.gt(0) && exposure.symbol !== 'USD') {
+        const value = new BigNumber(exposure.value)
+        const valueStr = value.isPositive() ? `$${value.toFormat(0)}` : `-$${value.abs().toFormat(0)}`
+        topExposures.push({
+          symbol: exposure.symbol,
+          value: valueStr,
+          percent: percent.toNumber(),
+        })
+      }
+    }
+
     yield put(
       updateBreakdown({
         walletNav,
         tokens: aggregatedTokens,
+        topExposures: topExposures,
       })
     )
   } catch (error) {

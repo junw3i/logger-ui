@@ -55,13 +55,11 @@ function Funding() {
   }
 
   function renderRow(row, i) {
-    // console.log(i)
     const { id, btc, eth, sol, updatedAt } = row
     const now = new Date().getTime() / 1000
     const diff = Math.round((now - parseInt(updatedAt)) / 60)
 
     return (
-      // <div key={id} className="flex">
       <>
         <Cell key={`id-${i}`} col={1} row={i + 1} className={`p-1 text-left pl-6`}>
           {id}
@@ -88,7 +86,6 @@ function Funding() {
           {diff}m ago
         </Cell>
       </>
-      // </div>
     )
   }
 

@@ -53,8 +53,8 @@
 .grid[data-hovered-cell-address^='R5'] .cell[data-address^='R5'],
 .grid[data-hovered-cell-address^='R6'] .cell[data-address^='R6'],
 .grid[data-hovered-cell-address^='R7'] .cell[data-address^='R7'],
-.grid[data-hovered-cell-address^='R8'].cell[data-address^='R8']
-  .grid[data-hovered-cell-address^='R9'].cell[data-address^='R9'] {
+.grid[data-hovered-cell-address^='R8'] .cell[data-address^='R8'],
+.grid[data-hovered-cell-address^='R9'] .cell[data-address^='R9'] {
   background-color: #141b2b;
 }
 
