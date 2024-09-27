@@ -13,7 +13,7 @@ function Tokens() {
   const tokensLength = breakdownData.tokens.length
 
   return (
-    <div>
+    <div className="flex justify-center">
       <table className="text-white text-sm bg-slate-800 mt-4">
         <thead>
           <tr>

@@ -46,7 +46,7 @@ function Deribit(data) {
 
   return (
     <div className="overflow-auto w-screen md:w-auto">
-      <div className="text-white my-2 bg-slate-800 p-4 py-2 text-sm w-full max-w-[1200px] min-w-[900px]" key={id}>
+      <div className="text-white my-2 bg-slate-800 p-4 py-2 text-sm w-full max-w-[1200px] min-w-[1000px]" key={id}>
         <div className="grid grid-cols-4">
           <div className="text-left p-1">{id}</div>
           <div className="text-left p-1">{new BigNumber(accountLeverage).times(100).toFormat(2)}%</div>
@@ -102,7 +102,7 @@ function Exchange(data) {
   const fundingApr = new BigNumber(fundingAmount).dividedBy(nav).times(100).toFormat(2)
   return (
     <div className="overflow-auto w-screen md:w-auto">
-      <div className="text-white  my-2 bg-slate-800 p-4 py-2 text-sm w-full max-w-[1200px] min-w-[900px]" key={id}>
+      <div className="text-white  my-2 bg-slate-800 p-4 py-2 text-sm w-full max-w-[1200px] min-w-[1000px]" key={id}>
         <div className="grid grid-cols-4">
           <div className="text-left p-1">{id}</div>
           <div className="text-left p-1">{new BigNumber(accountLeverage).toFormat(2)}X</div>

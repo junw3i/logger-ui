@@ -66,7 +66,7 @@ function Nav() {
 
   return (
     <SkeletonTheme baseColor="#5294e0" highlightColor="#96c7ff" borderRadius="0.5rem" duration={4}>
-      <div className=" text-white  text-sm flex max-w-[1200px] flex-wrap md:m-4">
+      <div className=" text-white  text-sm inline-flex max-w-[1200px] flex-wrap md:mx-auto">
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData

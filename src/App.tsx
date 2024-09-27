@@ -16,8 +16,8 @@ function App() {
         </a>
         <Funding />
         <Nav />
-        <Tokens />
         <Positions />
+        <Tokens />
       </div>
       <div className="w-96 mt-4">
         <div className="mx-auto w-full text-center bg-black text-white h-96">
