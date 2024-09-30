@@ -1,6 +1,6 @@
 import { fork } from 'redux-saga/effects'
 import coinbaseSaga from './Coinbase'
-import { fundingSaga, exchangesSaga, walletsSaga, trendSaga } from './Firestore'
+import { fundingSaga, exchangesSaga, walletsSaga, trendSaga, taSaga } from './Firestore'
 
 export function* rootSaga() {
   yield fork(coinbaseSaga)
@@ -9,4 +9,5 @@ export function* rootSaga() {
   // yield fork(debankSaga)
   yield fork(walletsSaga)
   yield fork(trendSaga)
+  yield fork(taSaga)
 }

@@ -47,10 +47,30 @@ function Nav() {
   const exchangeData = useAppSelector((state) => state.firestore.exchanges)
   const priceData = useAppSelector((state) => state.coinbase.price)
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
+  const macdv = useAppSelector((state) => state.firestore.macdv)
+  const impliedSkew = useAppSelector((state) => state.firestore.impliedSkew)
+  const stochastic = useAppSelector((state) => state.firestore.stoch)
+  console.log('impliedSkew', impliedSkew)
+  console.log('stochastic', stochastic)
   // const yieldData = useAppSelector((state) => state.firestore.yield)
   const trendData = useAppSelector((state) => state.firestore.trend)
   const exposure = useMemo(() => calculateExposure(exchangeData), [exchangeData])
   const stables = useMemo(() => calculateStables(breakdownData.tokens), [breakdownData.tokens])
+  const macd45 = useMemo(() => {
+    const d = macdv.find((m) => m.tf === 2700)
+    if (!d) return '0 | 0'
+    return `${d.macd} | ${d.signal}`
+  }, [macdv])
+  const macd180 = useMemo(() => {
+    const d = macdv.find((m) => m.tf === 10800)
+    if (!d) return '0 | 0'
+    return `${d.macd} | ${d.signal}`
+  }, [macdv])
+  const stochValue = useMemo(() => {
+    const d = stochastic.find((m) => m.tf === 2700)
+    if (!d) return '0'
+    return `${new BigNumber(d.last3[0]).toFormat(2)}`
+  }, [stochastic])
   // const totalYield = useMemo(() => {
   //   const positionsYield = Object.values(yieldData).reduce((acc, value) => {
   //     return acc.plus(value)
@@ -66,7 +86,7 @@ function Nav() {
 
   return (
     <SkeletonTheme baseColor="#5294e0" highlightColor="#96c7ff" borderRadius="0.5rem" duration={4}>
-      <div className=" text-white  text-sm inline-flex max-w-[1200px] flex-wrap md:mx-auto">
+      <div className=" text-white  text-sm inline-flex max-w-[1000px] flex-wrap md:mx-auto">
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData
@@ -98,6 +118,21 @@ function Nav() {
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
             <BoxData title="EXPOSURE" value={`$${exposure}`} isLoaded={true} />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="MACD 45M (T-1)" value={macd45} isLoaded={true} />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="MACD 3H (T-1)" value={macd180} isLoaded={true} />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="STOCH 45M" value={stochValue} isLoaded={true} />
           </div>
         </BoxWrapper>
       </div>

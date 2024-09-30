@@ -18,6 +18,15 @@ interface FirestoreState {
   debank: DebankData[]
   breakdown: BreakdownData
   trend: TrendData
+  stoch: StochData[]
+  macdv: MACDData[]
+  impliedSkew: {
+    '7': Skew
+    '30': Skew
+    '60': Skew
+    '90': Skew
+    '180': Skew
+  }
 }
 
 interface Position {
@@ -49,6 +58,45 @@ interface ChainData {
 export interface DebankData {
   totalValue: number
   chains: ChainData[]
+  updatedAt: number
+}
+
+interface StochData {
+  last3: [number, number, number]
+  tf: number
+}
+
+export interface StochDataFull {
+  data: StochData[]
+  id: string
+  updatedAt: number
+}
+
+export interface MACDData {
+  macd: number
+  signal: number
+  tf: number
+}
+
+export interface MACDDataFull {
+  data: MACDData[]
+  id: string
+  updatedAt: number
+}
+
+interface Skew {
+  diff: number
+  call: number
+  put: number
+  d: number
+}
+export interface ImpliedSkewData {
+  0: Skew
+  1: Skew
+  2: Skew
+  3: Skew
+  4: Skew
+  id: string
   updatedAt: number
 }
 
@@ -97,6 +145,40 @@ const initialState: FirestoreState = {
     direction: '',
     start: 0,
   },
+  stoch: [],
+  macdv: [],
+  impliedSkew: {
+    '7': {
+      diff: 0,
+      call: 0,
+      put: 0,
+      d: 0,
+    },
+    '30': {
+      diff: 0,
+      call: 0,
+      put: 0,
+      d: 0,
+    },
+    '60': {
+      diff: 0,
+      call: 0,
+      put: 0,
+      d: 0,
+    },
+    '90': {
+      diff: 0,
+      call: 0,
+      put: 0,
+      d: 0,
+    },
+    '180': {
+      diff: 0,
+      call: 0,
+      put: 0,
+      d: 0,
+    },
+  },
 }
 
 export const fundingSlice = createSlice({
@@ -118,9 +200,27 @@ export const fundingSlice = createSlice({
     updateTrend: (state, action) => {
       state.trend = action.payload
     },
+    updateStoch: (state, action) => {
+      state.stoch = action.payload
+    },
+    updateMACDV: (state, action) => {
+      state.macdv = action.payload
+    },
+    updateImpliedSkew: (state, action) => {
+      state.impliedSkew = action.payload
+    },
   },
 })
 
-export const { updateFunding, updateExchanges, updateDebank, updateBreakdown, updateTrend } = fundingSlice.actions
+export const {
+  updateFunding,
+  updateExchanges,
+  updateDebank,
+  updateBreakdown,
+  updateTrend,
+  updateStoch,
+  updateImpliedSkew,
+  updateMACDV,
+} = fundingSlice.actions
 
 export default fundingSlice.reducer

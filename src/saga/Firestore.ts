@@ -10,6 +10,14 @@ import {
   updateBreakdown,
   updateTrend,
   TokenData,
+  StochData,
+  MACDData,
+  ImpliedSkewData,
+  StochDataFull,
+  MACDDataFull,
+  updateStoch,
+  updateMACDV,
+  updateImpliedSkew,
 } from './store/Firestore'
 import { delay, put, select } from 'redux-saga/effects'
 import dayjs from 'dayjs'
@@ -283,6 +291,49 @@ export function* walletsSaga() {
         topExposures: topExposures,
       })
     )
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function getStoch() {
+  const stochSnapshot = await getDocs(collection(db, 'stoch'))
+  return stochSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as StochDataFull[]) }))
+}
+async function getMACDV() {
+  const stochSnapshot = await getDocs(collection(db, 'macd_v'))
+  return stochSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as MACDDataFull[]) }))
+}
+async function getImpliedSkew() {
+  const stochSnapshot = await getDocs(collection(db, 'implied_skew'))
+  return stochSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ImpliedSkewData[]) }))
+}
+
+export function* taSaga() {
+  try {
+    const unix = dayjs().unix()
+    const stoch = yield getStoch()
+    const macdv = yield getMACDV()
+    const impliedSkew = yield getImpliedSkew()
+    console.log(impliedSkew[0])
+
+    if (stoch[0].updatedAt > unix - 3600) {
+      yield put(updateStoch(stoch[0].data))
+    }
+    if (macdv[0].updatedAt > unix - 3600) {
+      yield put(updateMACDV(macdv[0].data))
+    }
+    if (impliedSkew[0].updatedAt > unix - 3600) {
+      yield put(
+        updateImpliedSkew({
+          '7': impliedSkew[0]['0'],
+          '30': impliedSkew[0]['1'],
+          '60': impliedSkew[0]['2'],
+          '90': impliedSkew[0]['3'],
+          '180': impliedSkew[0]['4'],
+        })
+      )
+    }
   } catch (error) {
     console.error(error)
   }
