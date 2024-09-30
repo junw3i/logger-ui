@@ -96,6 +96,7 @@ function PerpsTable({ rows }) {
 
 function Exchange(data) {
   const { id, accountLeverage, nav, positions, fundingAmount } = data
+  if (positions.length === 0) return
   if (id === 'deribit') {
     return Deribit(data)
   }
