@@ -305,7 +305,7 @@ export function* taSaga() {
 
     const now = dayjs().unix()
     const taUpdated = all.filter((row) => row.updatedAt > now - 3600).sort((a, b) => a.id - b.id)
-
+    console.log(taUpdated)
     yield put(updateTA(taUpdated))
 
     const impliedSkew = yield getImpliedSkew()
