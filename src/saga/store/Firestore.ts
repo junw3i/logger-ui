@@ -17,9 +17,7 @@ interface FirestoreState {
   exchanges: ExchangeData[]
   debank: DebankData[]
   breakdown: BreakdownData
-  trend: TrendData
-  stoch: StochData[]
-  macdv: MACDData[]
+  ta: []
   impliedSkew: {
     '7': Skew
     '30': Skew
@@ -141,12 +139,7 @@ const initialState: FirestoreState = {
     tokens: [],
     topExposures: [],
   },
-  trend: {
-    direction: '',
-    start: 0,
-  },
-  stoch: [],
-  macdv: [],
+  ta: [],
   impliedSkew: {
     '7': {
       diff: 0,
@@ -197,30 +190,16 @@ export const fundingSlice = createSlice({
     updateBreakdown: (state, action) => {
       state.breakdown = action.payload
     },
-    updateTrend: (state, action) => {
-      state.trend = action.payload
-    },
-    updateStoch: (state, action) => {
-      state.stoch = action.payload
-    },
-    updateMACDV: (state, action) => {
-      state.macdv = action.payload
-    },
     updateImpliedSkew: (state, action) => {
       state.impliedSkew = action.payload
+    },
+    updateTA: (state, action) => {
+      state.ta = action.payload
     },
   },
 })
 
-export const {
-  updateFunding,
-  updateExchanges,
-  updateDebank,
-  updateBreakdown,
-  updateTrend,
-  updateStoch,
-  updateImpliedSkew,
-  updateMACDV,
-} = fundingSlice.actions
+export const { updateFunding, updateExchanges, updateDebank, updateBreakdown, updateImpliedSkew, updateTA } =
+  fundingSlice.actions
 
 export default fundingSlice.reducer

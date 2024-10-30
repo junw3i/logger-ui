@@ -3,6 +3,7 @@ import { store } from './saga/store'
 
 import Funding from './components/Funding'
 import Nav from './components/Nav'
+import TA from './components/TA'
 import Tokens from './components/Tokens'
 import Positions from './components/Positions'
 import './App.css'
@@ -16,6 +17,7 @@ function App() {
         </a>
         <Funding />
         <Nav />
+        <TA />
         <Positions />
         <Tokens />
       </div>

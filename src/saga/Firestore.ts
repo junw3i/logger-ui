@@ -8,13 +8,9 @@ import {
   updateDebank,
   WalletData,
   updateBreakdown,
-  updateTrend,
   ImpliedSkewData,
-  StochDataFull,
-  MACDDataFull,
-  updateStoch,
-  updateMACDV,
   updateImpliedSkew,
+  updateTA,
 } from './store/Firestore'
 import { delay, put, select } from 'redux-saga/effects'
 import dayjs from 'dayjs'
@@ -28,18 +24,22 @@ interface FundingData {
   updatedAt: number
 }
 
-export function* trendSaga() {
-  try {
-    const trend = yield getTrend()
-    yield put(updateTrend(trend))
-  } catch (error) {
-    console.error(error)
-  }
+// Function to fetch all documents in a collection
+async function getAllDocuments(collectionName: string) {
+  const collectionRef = collection(db, collectionName)
+  const querySnapshot = await getDocs(collectionRef)
+
+  const documents = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }))
+
+  return documents
 }
-async function getTrend() {
-  const docRef = doc(db, 'trend', 'current')
-  const docSnap = await getDoc(docRef)
-  return docSnap.data()
+
+async function getTA() {
+  const all = await getAllDocuments('ta')
+  return all
 }
 
 async function getFunding() {
@@ -293,14 +293,6 @@ export function* walletsSaga() {
   }
 }
 
-async function getStoch() {
-  const stochSnapshot = await getDocs(collection(db, 'stoch'))
-  return stochSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as StochDataFull[]) }))
-}
-async function getMACDV() {
-  const stochSnapshot = await getDocs(collection(db, 'macd_v'))
-  return stochSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as MACDDataFull[]) }))
-}
 async function getImpliedSkew() {
   const stochSnapshot = await getDocs(collection(db, 'implied_skew'))
   return stochSnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as ImpliedSkewData[]) }))
@@ -309,17 +301,15 @@ async function getImpliedSkew() {
 export function* taSaga() {
   try {
     const unix = dayjs().unix()
-    const stoch = yield getStoch()
-    const macdv = yield getMACDV()
-    const impliedSkew = yield getImpliedSkew()
-    console.log(impliedSkew[0])
+    const all = yield getTA()
 
-    if (stoch[0].updatedAt > unix - 3600) {
-      yield put(updateStoch(stoch[0].data))
-    }
-    if (macdv[0].updatedAt > unix - 3600) {
-      yield put(updateMACDV(macdv[0].data))
-    }
+    const now = dayjs().unix()
+    const taUpdated = all.filter((row) => row.updatedAt > now - 3600).sort((a, b) => a.id - b.id)
+
+    yield put(updateTA(taUpdated))
+
+    const impliedSkew = yield getImpliedSkew()
+
     if (impliedSkew[0].updatedAt > unix - 3600) {
       yield put(
         updateImpliedSkew({
