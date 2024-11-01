@@ -30,11 +30,12 @@ interface SignalData {
 function renderLastSignal(signal: SignalData) {
   const now = dayjs().unix()
   const diff = now - signal.timestamp
-  // to days
   const days = new BigNumber(diff / 86400).dp(1).toNumber()
+  const color = signal.signal === 'long' ? 'text-green-400' : 'text-red-500'
+  const signalColor = `font-bold ${color}`
   return (
     <div className="min-w-20 p-1">
-      <div className="font-bold">{signal.signal.toUpperCase()}</div>
+      <div className={signalColor}>{signal.signal.toUpperCase()}</div>
       <div className="text-xs">{days} DAYS</div>
     </div>
   )
@@ -43,55 +44,71 @@ function renderLastSignal(signal: SignalData) {
 function renderAnalyze(id, data) {
   const strategy = id.split(':')[2]
   let value = 'NEUTRAL'
+  let trendCss = 'font-bold'
+  let detailsCss = 'text-xs'
   if (strategy === 'trend') {
     const fast = new BigNumber(data.fast)
     const slow = new BigNumber(data.slow)
     if (fast.gt(slow)) {
       value = 'BULL'
+      trendCss += ' text-green-400'
     } else {
       value = 'BEAR'
+      trendCss += ' text-red-500'
     }
     const gap = fast.minus(slow).dividedBy(slow).times(100).dp(1).toNumber()
 
+    if (gap > 0) {
+      detailsCss += ' text-green-400'
+    } else {
+      detailsCss += ' text-red-500'
+    }
+
     return (
       <div>
-        <div>{value}</div>
-        <div className="text-xs">{gap}% GAP</div>
+        <div className={trendCss}>{value}</div>
+        <div className={detailsCss}>{gap}% GAP</div>
       </div>
     )
   } else if (strategy === 'macdv') {
     let buyValue = ''
     if (data.macd_0 > data.signal_0) {
       value = 'BULL'
+      trendCss += ' text-green-400'
     } else {
       value = 'BEAR'
+      trendCss += ' text-red-500'
     }
     if (data.macd_0 > 150) {
       buyValue = 'OVERBOUGHT'
+      detailsCss += ' text-green-400'
     }
     if (data.macd_0 < -150) {
       buyValue = 'OVERSOLD'
+      detailsCss += ' text-red-500'
     }
     return (
       <div>
-        <div>{value}</div>
-        <div className="text-xs">{buyValue}</div>
+        <div className={trendCss}>{value}</div>
+        <div className={detailsCss}>{buyValue}</div>
       </div>
     )
   } else if (strategy === 'stoch') {
     if (data.km_0 > 80) {
       value = 'OVERBOUGHT'
+      trendCss += ' text-green-400'
     } else if (data.km_0 < 20) {
       value = 'OVERSOLD'
+      trendCss += ' text-red-500'
     }
     return (
       <div>
-        <div>{value}</div>
+        <div className={trendCss}>{value}</div>
       </div>
     )
   }
 
-  return <div>{value}</div>
+  return <div className={trendCss}>{value}</div>
 }
 function TA() {
   const taData = useAppSelector((state) => state.firestore.ta)
