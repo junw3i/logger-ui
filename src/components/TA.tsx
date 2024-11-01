@@ -42,7 +42,6 @@ function renderLastSignal(signal: SignalData) {
 
 function renderAnalyze(id, data) {
   const strategy = id.split(':')[2]
-  console.log('strategy', strategy)
   let value = 'NEUTRAL'
   if (strategy === 'trend') {
     const fast = new BigNumber(data.fast)

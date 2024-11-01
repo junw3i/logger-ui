@@ -1,1 +1,1 @@
-export const getEthPrice = (state) => state.coinbase.price
+export const getMarketPrices = (state) => state.coinbase.prices

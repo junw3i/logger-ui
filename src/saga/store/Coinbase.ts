@@ -1,11 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 interface CoinbaseStats {
-  price: string
+  prices: {
+    ETH: string
+    BTC: string
+    SOL: string
+  }
 }
 
 const initialState: CoinbaseStats = {
-  price: '0',
+  prices: {
+    ETH: '0',
+    BTC: '0',
+    SOL: '0',
+  },
 }
 
 export const coinbaseSlice = createSlice({
@@ -13,7 +21,7 @@ export const coinbaseSlice = createSlice({
   initialState,
   reducers: {
     updateLastPrice: (state, action) => {
-      state.price = action.payload
+      state.prices = action.payload
     },
   },
 })

@@ -43,7 +43,7 @@ function calculateStables(tokens) {
 
 function Nav() {
   const exchangeData = useAppSelector((state) => state.firestore.exchanges)
-  const priceData = useAppSelector((state) => state.coinbase.price)
+  const priceData = useAppSelector((state) => state.coinbase.prices)
   const breakdownData = useAppSelector((state) => state.firestore.breakdown)
   const impliedSkew = useAppSelector((state) => state.firestore.impliedSkew)
   console.log('impliedSkew', impliedSkew)
@@ -55,7 +55,17 @@ function Nav() {
       <div className=" text-white  text-sm inline-flex max-w-[1000px] flex-wrap md:mx-auto">
         <BoxWrapper>
           <div className="box-outline bg-slate-800 p-3">
-            <BoxData title="ETH" value={`$${priceData}`} isLoaded={priceData !== '0'} />
+            <BoxData title="ETH" value={`$${priceData.ETH}`} isLoaded={priceData.ETH !== '0'} />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="BTC" value={`$${priceData.BTC}`} isLoaded={priceData.BTC !== '0'} />
+          </div>
+        </BoxWrapper>
+        <BoxWrapper>
+          <div className="box-outline bg-slate-800 p-3">
+            <BoxData title="SOL" value={`$${priceData.SOL}`} isLoaded={priceData.SOL !== '0'} />
           </div>
         </BoxWrapper>
         <BoxWrapper>

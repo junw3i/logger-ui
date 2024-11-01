@@ -56,15 +56,29 @@ function initWebsocket() {
   })
 }
 
-async function getEthPrice() {
+async function getOraclePrices() {
   const url = `https://api.carbon.network/carbon/oracle/v1/results_latest?pagination.limit=1000`
   const res = await fetch(url)
   const data = (await res.json()).latest_results
-  const eth = data.find((d: any) => d.oracle_id === 'SIDXETH')
-  if (eth) {
-    return new BigNumber(eth.data).toFormat(2)
+  const result = {
+    ETH: '0',
+    BTC: '0',
+    SOL: '0',
   }
-  return '0'
+  const eth = data.find((d: any) => d.oracle_id === 'SIDXETH')
+
+  if (eth) {
+    result.ETH = new BigNumber(eth.data).toFormat(2)
+  }
+  const btc = data.find((d: any) => d.oracle_id === 'SIDXBTC')
+  if (btc) {
+    result.BTC = new BigNumber(btc.data).toFormat(0)
+  }
+  const sol = data.find((d: any) => d.oracle_id === '.CSOL')
+  if (sol) {
+    result.SOL = new BigNumber(sol.data).toFormat(2)
+  }
+  return result
 }
 
 export default function* coinbaseSaga() {
@@ -77,8 +91,8 @@ export default function* coinbaseSaga() {
   // workaround to get eth price
   try {
     while (true) {
-      const price = yield call(getEthPrice)
-      yield put(updateLastPrice(price))
+      const prices = yield call(getOraclePrices)
+      yield put(updateLastPrice(prices))
       yield delay(5000)
     }
   } catch (error) {

@@ -14,7 +14,7 @@ import {
 } from './store/Firestore'
 import { delay, put, select } from 'redux-saga/effects'
 import dayjs from 'dayjs'
-import { getEthPrice } from './selectors'
+import { getMarketPrices } from './selectors'
 import BigNumber from 'bignumber.js'
 
 interface FundingData {
@@ -89,7 +89,7 @@ export function* exchangesSaga() {
     // wait for eth price != 0
     let ethPrice = '0'
     while (ethPrice === '0') {
-      ethPrice = yield select(getEthPrice)
+      ethPrice = (yield select(getMarketPrices)).ETH
       yield delay(1000)
     }
 
