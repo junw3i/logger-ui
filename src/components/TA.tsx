@@ -115,7 +115,7 @@ function TA() {
   // const impliedSkew = useAppSelector((state) => state.firestore.impliedSkew)
 
   return (
-    <div className="text-white text-sm md:mx-auto w-fit bg-slate-800 p-4 mt-4">
+    <div className="text-white text-sm md:mx-auto w-screen md:w-fit bg-slate-800 p-4 mt-4 overflow-auto">
       <table>
         <thead>
           <tr>
