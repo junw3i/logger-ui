@@ -6,6 +6,7 @@ import Nav from './components/Nav'
 import TA from './components/TA'
 import Tokens from './components/Tokens'
 import Positions from './components/Positions'
+import Mirrors from './components/Mirrors'
 import './App.css'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Nav />
         <TA />
         <Positions />
+        <Mirrors />
         <Tokens />
       </div>
       <div className="w-96 mt-4">

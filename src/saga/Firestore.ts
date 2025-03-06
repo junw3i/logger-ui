@@ -11,6 +11,8 @@ import {
   ImpliedSkewData,
   updateImpliedSkew,
   updateTA,
+  MirrorData,
+  updateMirrors,
 } from './store/Firestore'
 import { delay, put, select } from 'redux-saga/effects'
 import dayjs from 'dayjs'
@@ -140,6 +142,11 @@ export function* debankSaga() {
 async function getWallets() {
   const querySnapshot = await getDocs(collection(db, 'wallets'))
   return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as WalletData[]) }))
+}
+
+async function getMirrors() {
+  const querySnapshot = await getDocs(collection(db, 'mirror_data'))
+  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as MirrorData[]) }))
 }
 // async function getExchanges() {
 //   const querySnapshot = await getDocs(collection(db, 'exchanges'))
@@ -305,7 +312,7 @@ export function* taSaga() {
 
     const now = dayjs().unix()
     const taUpdated = all.filter((row) => row.updatedAt > now - 3600).sort((a, b) => a.id - b.id)
-    console.log(taUpdated)
+    // console.log(taUpdated)
     yield put(updateTA(taUpdated))
 
     const impliedSkew = yield getImpliedSkew()
@@ -324,4 +331,11 @@ export function* taSaga() {
   } catch (error) {
     console.error(error)
   }
+}
+
+export function* mirrorsSaga() {
+  const mirrors = yield getMirrors()
+  const now = dayjs().unix()
+  const filtered = mirrors.filter((mirror) => now - mirror.last_updated < 3600 * 24)
+  yield put(updateMirrors(filtered))
 }

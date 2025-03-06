@@ -25,6 +25,7 @@ interface FirestoreState {
     '90': Skew
     '180': Skew
   }
+  mirrors: MirrorData[]
 }
 
 interface Position {
@@ -172,6 +173,30 @@ const initialState: FirestoreState = {
       d: 0,
     },
   },
+  mirrors: [],
+}
+
+interface MirrorPosition {
+  coin: string
+  entry_price: number
+  mark_price: number
+  notional: number
+  percent: number
+  scale: number
+  size: number
+  upnl: number
+}
+export interface MirrorData {
+  account_value: number
+  day: [number, number]
+  week: [number, number]
+  month: [number, number]
+  long_exposure: number
+  short_exposure: number
+  total_exposure: number
+  positions: MirrorPosition[]
+  last_updated: number
+  id: string
 }
 
 export const fundingSlice = createSlice({
@@ -196,10 +221,20 @@ export const fundingSlice = createSlice({
     updateTA: (state, action) => {
       state.ta = action.payload
     },
+    updateMirrors: (state, action) => {
+      state.mirrors = action.payload
+    },
   },
 })
 
-export const { updateFunding, updateExchanges, updateDebank, updateBreakdown, updateImpliedSkew, updateTA } =
-  fundingSlice.actions
+export const {
+  updateFunding,
+  updateExchanges,
+  updateDebank,
+  updateBreakdown,
+  updateImpliedSkew,
+  updateTA,
+  updateMirrors,
+} = fundingSlice.actions
 
 export default fundingSlice.reducer
